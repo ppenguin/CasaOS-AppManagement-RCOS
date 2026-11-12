@@ -269,8 +269,10 @@ func main() {
 		}
 	}
 
-	// a move of Docker's data cut short by a stop of this service
-	v1.RecoverDockerLocation()
+	// a move of Docker's data cut short by a stop of this service (none on an image-managed host)
+	if !config.ServerInfo.ImageManaged {
+		v1.RecoverDockerLocation()
+	}
 
 	v1Router := route.InitV1Router()
 	v2Router := route.InitV2Router()

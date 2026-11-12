@@ -40,6 +40,12 @@ func dockerLocationFail(ctx echo.Context, status int, err error) error {
 	return ctx.JSON(status, &modelCommon.Result{Success: common_err.CLIENT_ERROR, Message: err.Error(), Data: dockerLocation().State()})
 }
 
+// NoDockerLocation answers every docker-location route on an image-managed host ([server] ImageManaged):
+// the image owns Docker's mounts.
+func NoDockerLocation(ctx echo.Context) error {
+	return ctx.JSON(http.StatusNotFound, &modelCommon.Result{Success: common_err.CLIENT_ERROR, Message: "the system image owns where Docker keeps its data"})
+}
+
 // GetDockerLocation says where Docker's data is, and how the last move went.
 func GetDockerLocation(ctx echo.Context) error {
 	return dockerLocationOK(ctx, dockerLocation().State())

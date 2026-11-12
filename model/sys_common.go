@@ -29,6 +29,8 @@ type APPModel struct {
 
 type ServerModel struct {
 	AppStoreList []string `ini:"appstore,,allowshadow"`
+	// ImageManaged: the system image owns Docker's setup (as the core's [server] ImageManaged): no move of Docker's data
+	ImageManaged bool `ini:"ImageManaged"`
 }
 
 type GlobalModel struct {
