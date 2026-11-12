@@ -74,11 +74,16 @@ func InitV1Router() http.Handler {
 
 			v1ContainerGroup.DELETE("/:id", v1.UninstallApp) // app/uninstall/:id
 
-			// where Docker's data is, and moving it: before /:id, which would take them
-			v1ContainerGroup.GET("/docker-location", v1.GetDockerLocation)
-			v1ContainerGroup.GET("/docker-location/check", v1.CheckDockerLocation)
-			v1ContainerGroup.POST("/docker-location", v1.MoveDockerLocation)
-			v1ContainerGroup.DELETE("/docker-location/old", v1.DeleteDockerLocationOldCopy)
+			// where Docker's data is, and moving it: before /:id, which would take them. An image-managed
+			// host: 404, as from a service without the feature (the image owns Docker's mounts)
+			get, check, move, deleteOld := v1.GetDockerLocation, v1.CheckDockerLocation, v1.MoveDockerLocation, v1.DeleteDockerLocationOldCopy
+			if config.ServerInfo.ImageManaged {
+				get, check, move, deleteOld = v1.NoDockerLocation, v1.NoDockerLocation, v1.NoDockerLocation, v1.NoDockerLocation
+			}
+			v1ContainerGroup.GET("/docker-location", get)
+			v1ContainerGroup.GET("/docker-location/check", check)
+			v1ContainerGroup.POST("/docker-location", move)
+			v1ContainerGroup.DELETE("/docker-location/old", deleteOld)
 		}
 	}
 
